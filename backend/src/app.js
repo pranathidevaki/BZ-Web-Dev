@@ -7,8 +7,8 @@ import morgan from "morgan"; // Import morgan
 import connectDB from "./db/dbConnect.js";
 import { config } from "./config.js";
 import authRouter from "./routes/authRouter.js";
-import shortURLRouter from "./routes/shortURLRouter.js";
 import userRouter from "./routes/userRouter.js";
+import shortURLRouter from "./routes/shortURLRouter.js";
 const app = express();
 
 // middlewares
@@ -32,11 +32,8 @@ connectDB();
 
 
 app.use("/api/auth", authRouter);
-
-app.use("/api/user", userRouter);
-
-app.use("/api/s", shortURLRouter);
-
+app.use("/api/s",shortURLRouter);
+app.use("/api/user",userRouter)
 app.use(express.static(path.join(__dirname, "../../frontend/dist")));
 
 app.get("/*name", (req, res) => { res.sendFile(path.join(__dirname, "../../frontend/dist/index.html")) });

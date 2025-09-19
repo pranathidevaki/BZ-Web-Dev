@@ -1,68 +1,54 @@
-import {nanoid} from "nanoid";
+
+import {nanoid} from "nanoid"
 import { ShortURL } from "../models/shorturl.model.js";
 
-export const generateShortUrl = async (req, res)=>{
+export const shortUrl=async(req,res)=>{
     try{
-        const originalUrl = req.body.originalUrl;
+        const userId=req.user.id;
+        const {originalUrl,expiresAt,title,customUrl}=req.body 
         if(!originalUrl){
-            return res.status(400).json({status:"BAD_REQUEST",message:"Long URL not found in the request body"});
+            return res.status(400).send({status:"missing original url in the payload"});
         }
-
-        const userId = req.user.id;
-
-        const customCode = req.body.customUrl;
-        
-        let shortCode ;
-        if(customCode){
-            shortCode = customCode;
-            // To do check if already exists
+        let shortCode="";
+        if(customUrl){
+            shortCode=customUrl;
+            let existData=await ShortURL.findOne({shortCode});
+            if(existData) return res.status(400).send({status:"try with a new customUrl"});
         }
         else{
-            shortCode = nanoid(7);
-            let existRecord = await ShortURL.findOne({shortCode}); // {longUrl, shortCode} or null
-
-            while(existRecord){
-                shortCode = nanoid(7);
-                existRecord = await ShortURL.findOne({shortCode});
-                if(!existRecord){
-                    break;
-                }
+            shortCode=nanoid(7);
+            let isUnique=false;
+            while(!isUnique){
+                const existData= await ShortURL.findOne({shortCode});
+                if(!existData) isUnique =true;
+                else shortCode=nanoid(7);
             }
-
         }
-
-        const shortURLObj = new ShortURL({
+        const newURL=new ShortURL({
             originalUrl,
             shortCode,
             userId
-        });
-
-        await shortURLObj.save();
-
-        return res.status(201).json(shortURLObj);
-
+        })
+        await newURL.save();
+        return res.status(200).send(newURL);
     }
     catch(error){
-        return res.status(500).json({status:"INTERNAL_SERVER_ERROR",message:error.message});
-    }
-}
+        console.log(error);
+        return res.status(500).send({status:"INTERNAL_SERVER_ERROR"});
 
-export const redirectToLongURL = async (req,res) =>{
+    }
+};
+export const redirectFunction=async(req,res)=>{
     try{
-        const shortCode = req.params.shortcode;
-
-        const existRecord = await ShortURL.findOne({shortCode});
-
-        if(!existRecord){
-            return res.status(404).json({status:"NOT_FOUND"});
+        const shortCode=req.params.shortcode;
+        const data= await ShortURL.findOne({shortCode});
+        if(!data){
+            return res.status(404).send({status:"NOT_FOUND"});
         }
-
-        return res.redirect(existRecord.originalUrl);
-
+        return res.redirect(data.originalUrl);
     }
     catch(error){
-        return res.status(500).json({status:"INTERNAL_SERVER_ERROR",message:"Something went wrong while generating short URL"});
+        console.log(error);
+        return res.status(500).send({status:"INTERNAL_SERVER_ERROR"});
     }
 }
-
-//http://localhost:3000/api/s/xwPlotj

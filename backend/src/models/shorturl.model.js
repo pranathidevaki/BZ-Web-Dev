@@ -21,4 +21,4 @@ const shortURLSchema = new Schema(
   { timestamps: true }
 );
 
-export const ShortURL = model("shortURL", shortURLSchema);
+export const ShortURL = model("ShortURL", shortURLSchema);
