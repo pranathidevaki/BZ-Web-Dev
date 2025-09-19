@@ -3,11 +3,8 @@
   padding-left: var(--mantine-spacing-md);
   padding-right: var(--mantine-spacing-md);
   border-bottom: 1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); /* Add this line */
-
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
-
-
 
 .activeLink {
   border-bottom: 2px solid var(--mantine-color-blue-6);
@@ -24,25 +21,29 @@
   color: light-dark(var(--mantine-color-black), var(--mantine-color-white));
   font-weight: 500;
   font-size: var(--mantine-font-size-sm);
+}
 
-  @media (max-width: $mantine-breakpoint-sm) {
+/* Replacing SCSS media query variable with plain CSS value */
+@media (max-width: 768px) {
+  .link {
     height: 42px;
     width: 100%;
   }
+}
 
-  @mixin hover {
-    background-color: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6));
-  }
+/* Replacing @mixin hover with normal :hover */
+.link:hover {
+  background-color: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6));
 }
 
 .subLink {
   width: 100%;
   padding: var(--mantine-spacing-xs) var(--mantine-spacing-md);
   border-radius: var(--mantine-radius-md);
+}
 
-  @mixin hover {
-    background-color: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-7));
-  }
+.subLink:hover {
+  background-color: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-7));
 }
 
 .dropdownFooter {
